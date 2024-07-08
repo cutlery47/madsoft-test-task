@@ -1,6 +1,8 @@
 from src.abstract.abstract_s3 import AbstractS3
 from src.abstract.abstract_repository import AbstractCRUDRepository
-from src.schemas.meme import InFileMemeDTO
+from src.schemas.meme import InFileMemeDTO, FileMemeDTO
+
+from typing import List
 
 from abc import ABC, abstractmethod
 
@@ -13,7 +15,7 @@ class AbstractService(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get(self, id_: int):
+    async def get(self, id_: int) -> FileMemeDTO:
         """
         Retrieving data by id
         :param id_:
@@ -22,7 +24,7 @@ class AbstractService(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_all(self):
+    async def get_all(self) -> List[FileMemeDTO]:
         """
         Retrieving all the data
         :return:
@@ -30,7 +32,7 @@ class AbstractService(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def add(self, meme: InFileMemeDTO):
+    async def add(self, meme: InFileMemeDTO) -> bool:
         """
         Adding a new meme
         :param meme:
@@ -38,7 +40,7 @@ class AbstractService(ABC):
         """
 
     @abstractmethod
-    def delete(self, id_: int):
+    async def delete(self, id_: int) -> bool:
         """
         Deleting an item by id
         :param id_:
@@ -46,7 +48,7 @@ class AbstractService(ABC):
         """
 
     @abstractmethod
-    def update(self, id_: int, meme: InFileMemeDTO):
+    async def update(self, id_: int, meme: InFileMemeDTO) -> bool:
         """
         Updating aa meme by id
         :param id_:

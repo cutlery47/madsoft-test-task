@@ -1,9 +1,13 @@
 from abc import ABC, abstractmethod
 
+from src.storage.models.meme import Meme
+from typing import List
+
+
 class AbstractCRUDRepository(ABC):
 
     @abstractmethod
-    def create(self, item):
+    async def create(self, item: Meme):
         """
         Adding an item to a storage
         :param item: A new piece of data to be stored
@@ -12,7 +16,7 @@ class AbstractCRUDRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def read(self, *filters):
+    async def read(self, *filters) -> List[Meme]:
         """
         Retrieving data, which satisfies the filters
         :param filters: Data parameters
@@ -21,7 +25,7 @@ class AbstractCRUDRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def update(self, item, *filters):
+    async def update(self, item: Meme, *filters):
         """
         Updating data, which satisfies the filters, with the new item data
         :param item: New item data
@@ -30,7 +34,7 @@ class AbstractCRUDRepository(ABC):
         """
 
     @abstractmethod
-    def delete(self, *filters):
+    async def delete(self, *filters):
         """
         Deleting data, which satisfies the filters
         :param filters: Data parameters
