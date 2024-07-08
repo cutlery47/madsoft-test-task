@@ -1,9 +1,10 @@
 from src.abstract.abstract_service import AbstractService
 from src.abstract.abstract_s3 import AbstractS3
 from src.abstract.abstract_repository import AbstractCRUDRepository
-from src.schemas.meme import InFileMemeDTO
+from src.schemas.meme import InFileMemeDTO, DatabaseMemeDTO, FileMemeDTO
+from src.storage.models.meme import Meme
 
-from fastapi import UploadFile
+from typing import List
 
 class Service(AbstractService):
 
@@ -11,21 +12,40 @@ class Service(AbstractService):
         self.s3 = s3
         self.repository = repository
 
-    async def get(self, id_: int):
-        meme = self.repository.read(id_)
-        return self.s3.get(names=[meme])
+    async def get(self, id_: int) -> FileMemeDTO:
 
-    async def get_all(self):
-        memes = self.repository.read()
-        return self.s3.get(names=memes)
+        meme = await self.repository.read(id_)
+        s3_meme = DatabaseMemeDTO.model_validate(meme[0], from_attributes=True)
+        return self.s3.get(memes=[s3_meme])[0]
 
-    async def add(self, meme: InFileMemeDTO):
-        uploaded = self.s3.upload(meme)
-        self.repository.create(uploaded)
+    async def get_all(self) -> List[FileMemeDTO]:
+        memes = await self.repository.read()
+        s3_memes = [DatabaseMemeDTO.model_validate(meme, from_attributes=True) for meme in memes]
+        return self.s3.get(memes=s3_memes)
 
-    async def delete(self, id_: int):
-        meme = self.repository.delete(id_)
+    async def add(self, meme: InFileMemeDTO) -> bool:
+        uploaded_meme = self.s3.upload(meme)
+        database_meme = Meme(**uploaded_meme.model_dump())
+        await self.repository.create(database_meme)
 
+        return True
 
-    async def update(self, id_: int, item):
-        pass
+    async def delete(self, id_: int) -> bool:
+        database_meme = await self.repository.read(id_)
+        s3_meme = DatabaseMemeDTO.model_validate(database_meme[0], from_attributes=True)
+
+        if self.s3.delete(s3_meme):
+            await self.repository.delete(id_)
+
+        return True
+
+    async def update(self, id_: int, meme: InFileMemeDTO) -> bool:
+        database_meme = await self.repository.read(id_)
+        s3_meme = DatabaseMemeDTO.model_validate(database_meme[0], from_attributes=True)
+
+        if self.s3.delete(s3_meme):
+            new_s3_meme = self.s3.upload(meme)
+            new_database_meme = Meme(**new_s3_meme.model_dump())
+            await self.repository.update(new_database_meme, id_)
+
+        return True

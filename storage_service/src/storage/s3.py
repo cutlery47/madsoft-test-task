@@ -13,6 +13,7 @@ BUCKET = os.getenv('MINIO_BUCKET')
 class MinioS3(AbstractS3):
 
     def __init__(self):
+
         self._minio = Minio(endpoint=ENDPOINT,
                             access_key=ACCESS,
                             secret_key=PASSWD,
@@ -33,7 +34,6 @@ class MinioS3(AbstractS3):
                                  bucket_name=uploaded.bucket_name,
                                  size=meme.size,
                                  etag=uploaded.etag)
-
 
     def get(self, link: str):
         pass

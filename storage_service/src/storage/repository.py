@@ -1,15 +1,17 @@
 from src.abstract.abstract_repository import AbstractCRUDRepository
+from src.storage.models.meme import Meme
+
 
 class Repository(AbstractCRUDRepository):
 
-    def read(self, *filters):
+    async def read(self, *filters) -> Meme:
         pass
 
-    def create(self, item):
+    async def create(self, item: Meme):
         pass
 
-    def update(self, item, *filters):
+    async def update(self, item: Meme, *filters):
         pass
 
-    def delete(self, *filters):
+    async def delete(self, *filters):
         pass
