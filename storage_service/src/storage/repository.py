@@ -1,8 +1,9 @@
 from src.abstract.abstract_repository import AbstractCRUDRepository
 from src.exceptions.repository_exc import DatabaseMemeNotFoundException, InternalRepositoryException
 from src.storage.models.meme import Meme
+from src.application.utils import meme_to_dict
 
-from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -29,24 +30,24 @@ class Repository(AbstractCRUDRepository):
             try:
                 query = select(Meme).where(*filters)
                 result = await session.execute(query)
-                if len(result.scalars().all()) == 0:
+                memes = list(result.scalars().all())
+                if len(memes) == 0:
                     raise DatabaseMemeNotFoundException()
             except SQLAlchemyError as exc:
                 logger.error(f'{type(exc)} raised {exc.args[0]}')
                 raise InternalRepositoryException()
             else:
-                return [meme for meme in result.scalars().all()]
+                return memes
 
     async def create(self, item: Meme):
         async with self.sessionmaker() as session:
             try:
                 session.add(item)
+                await session.commit()
             except SQLAlchemyError as exc:
                 logger.error(f'{type(exc)} raised {exc.args[0]}')
                 await session.rollback()
                 raise InternalRepositoryException()
-            else:
-                await session.commit()
 
     async def update(self, meme: Meme, *filters):
         async with self.sessionmaker() as session:
@@ -56,12 +57,11 @@ class Repository(AbstractCRUDRepository):
                 result = await session.execute(query)
                 if result.rowcount == 0:
                     raise DatabaseMemeNotFoundException()
+                await session.commit()
             except SQLAlchemyError as exc:
                 logger.error(f'{type(exc)} raised {exc.args[0]}')
                 await session.rollback()
                 raise InternalRepositoryException()
-            else:
-                await session.commit()
 
     async def delete(self, *filters):
         async with self.sessionmaker() as session:
@@ -70,14 +70,10 @@ class Repository(AbstractCRUDRepository):
                 result = await session.execute(query)
                 if result.rowcount == 0:
                     raise DatabaseMemeNotFoundException()
+                await session.commit()
             except SQLAlchemyError as exc:
                 logger.error(f'{type(exc)} raised {exc.args[0]}')
                 await session.rollback()
                 raise InternalRepositoryException()
-            else:
-                await session.commit()
 
-def meme_to_dict(meme: Meme) -> dict:
-    dict_meme = meme.__dict__
-    dict_meme.pop('_sa_instance_state', None)
-    return dict_meme
+

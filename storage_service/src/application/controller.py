@@ -1,7 +1,9 @@
 from src.abstract.abstract_service import AbstractService
 from src.schemas.meme import InFileMemeDTO
 
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, UploadFile, Response
+
+from io import BytesIO
 
 class Controller:
 
@@ -27,16 +29,19 @@ class Controller:
         async def add_meme(file: UploadFile):
             meme = InFileMemeDTO(object_name=file.filename,
                                  size=file.size,
-                                 file=file.file)
-            return await self.service.add(meme)
+                                 file=BytesIO(file.file.read()))
+            await self.service.add(meme)
+            return "Meme was successfully uploaded"
 
         @self.router.put("/memes/{meme_id}")
         async def update_meme(meme_id: int, file: UploadFile):
             meme = InFileMemeDTO(object_name=file.filename,
                                  size=file.size,
-                                 file=file.file)
-            return await self.service.update(meme_id, meme)
+                                 file=BytesIO(file.file.read()))
+            await self.service.update(meme_id, meme)
+            return "Meme was successfully updated"
 
         @self.router.delete("/memes/{meme_id}")
         async def delete_meme(meme_id: int):
-            return await self.service.delete(meme_id)
+            await self.service.delete(meme_id)
+            return "Meme was successfully deleted"

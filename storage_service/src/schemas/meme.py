@@ -23,7 +23,7 @@ class InFileMemeDTO(BaseMemeDTO):
 
 class FileMemeDTO(DatabaseMemeDTO):
 
-    file: BytesIO
+    file_link: str
 
 
 

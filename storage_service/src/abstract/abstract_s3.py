@@ -29,11 +29,3 @@ class AbstractS3(ABC):
         :param meme:
         :return:
         """
-
-    @abstractmethod
-    def rollback(self, steps: int) -> bool:
-        """
-        Reverting last steps-amount operations
-        :param steps:
-        :return:
-        """
