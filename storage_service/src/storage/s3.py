@@ -48,8 +48,8 @@ class MinioS3(AbstractS3):
                 s3_meme_link = self._minio.get_presigned_url(method="GET",
                                                              bucket_name=meme.bucket_name,
                                                              object_name=meme.object_name)
-            except S3Error as exc:
-                raise S3MemeNotFoundException()
+            except S3Error:
+                continue
 
             file_meme = FileMemeDTO(object_name=meme.object_name,
                                     size=meme.size,

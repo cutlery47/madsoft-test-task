@@ -14,7 +14,7 @@ class Service(AbstractService):
         self.repository = repository
 
     async def get(self, id_: int) -> FileMemeDTO:
-        meme = await self.repository.read(Meme.id == id_)
+        meme = await self.repository.read(id_)
         s3_meme = DatabaseMemeDTO.model_validate(meme_to_dict(meme[0]), from_attributes=True)
         return self.s3.get(memes=[s3_meme])[0]
 
@@ -29,18 +29,18 @@ class Service(AbstractService):
         await self.repository.create(database_meme)
 
     async def delete(self, id_: int):
-        database_meme = await self.repository.read(Meme.id == id_)
+        database_meme = await self.repository.read(id_)
         s3_meme = DatabaseMemeDTO.model_validate(database_meme[0], from_attributes=True)
 
         self.s3.delete(s3_meme)
-        await self.repository.delete(Meme.id == id_)
+        await self.repository.delete(id_)
 
         return True
 
     async def update(self, id_: int, meme: InFileMemeDTO):
-        database_meme = await self.repository.read(Meme.id == id_)
+        database_meme = await self.repository.read(id_)
         s3_meme = DatabaseMemeDTO.model_validate(database_meme[0], from_attributes=True)
         self.s3.delete(s3_meme)
         new_s3_meme = self.s3.upload(meme)
         new_database_meme = Meme(**new_s3_meme.model_dump())
-        await self.repository.update(new_database_meme, Meme.id == id_)
+        await self.repository.update(new_database_meme, id_)

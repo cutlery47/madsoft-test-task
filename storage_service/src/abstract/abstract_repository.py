@@ -16,27 +16,27 @@ class AbstractCRUDRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def read(self, *filters) -> List[Meme]:
+    async def read(self, id_: int | None) -> List[Meme]:
         """
         Retrieving data, which satisfies the filters
-        :param filters: Data parameters
+        :param id_: Data parameters
         :return:
         """
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, item: Meme, *filters):
+    async def update(self, item: Meme, id_: int):
         """
         Updating data, which satisfies the filters, with the new item data
         :param item: New item data
-        :param filters: Data parameters
+        :param id_: Data parameters
         :return:
         """
 
     @abstractmethod
-    async def delete(self, *filters):
+    async def delete(self, id_: int):
         """
         Deleting data, which satisfies the filters
-        :param filters: Data parameters
+        :param id_: Data parameters
         :return:
         """

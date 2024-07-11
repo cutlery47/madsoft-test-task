@@ -15,3 +15,11 @@ class AbstractApplication(ABC):
         Returns runnable asgi app
         :return: FastAPI app
         """
+        raise NotImplementedError
+
+    @abstractmethod
+    def test_client(self):
+        """
+        Returns a test client
+        """
+        raise NotImplementedError

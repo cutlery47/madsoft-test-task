@@ -19,6 +19,6 @@ class Application(AbstractApplication):
     def asgi_app(self) -> ASGIApp:
         return self._app
 
-    def test_client(self):
+    def test_client(self) -> TestClient:
         return TestClient(app=self._app, follow_redirects=True)
 

@@ -25,10 +25,10 @@ class Repository(AbstractCRUDRepository):
         self.engine = create_async_engine(f"{DRIVER}://{USERNAME}:{PASSWD}@{HOST}:{PORT}/{NAME}")
         self.sessionmaker = async_sessionmaker(bind=self.engine, expire_on_commit=False)
 
-    async def read(self, *filters) -> List[Meme]:
+    async def read(self, id_: int | None) -> List[Meme]:
         async with self.sessionmaker() as session:
             try:
-                query = select(Meme).where(*filters)
+                query = select(Meme).where(Meme.id == id_)
                 result = await session.execute(query)
                 memes = list(result.scalars().all())
                 if len(memes) == 0:
@@ -49,11 +49,11 @@ class Repository(AbstractCRUDRepository):
                 await session.rollback()
                 raise InternalRepositoryException()
 
-    async def update(self, meme: Meme, *filters):
+    async def update(self, meme: Meme, id_: int):
         async with self.sessionmaker() as session:
             try:
                 dict_meme = meme_to_dict(meme)
-                query = update(Meme).where(*filters).values(dict_meme)
+                query = update(Meme).where(Meme.id == id_).values(dict_meme)
                 result = await session.execute(query)
                 if result.rowcount == 0:
                     raise DatabaseMemeNotFoundException()
@@ -63,10 +63,10 @@ class Repository(AbstractCRUDRepository):
                 await session.rollback()
                 raise InternalRepositoryException()
 
-    async def delete(self, *filters):
+    async def delete(self, id_: int):
         async with self.sessionmaker() as session:
             try:
-                query = delete(Meme).where(*filters)
+                query = delete(Meme).where(Meme.id == id_)
                 result = await session.execute(query)
                 if result.rowcount == 0:
                     raise DatabaseMemeNotFoundException()

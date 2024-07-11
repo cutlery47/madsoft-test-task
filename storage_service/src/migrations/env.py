@@ -5,6 +5,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
+from dotenv import load_dotenv, find_dotenv
+
 import sys
 import os
 
@@ -13,6 +15,30 @@ sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '../
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+env_path = find_dotenv('storage.env')
+load_dotenv(env_path)
+
+DB_USERNAME = os.environ.get("DB_USERNAME")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_HOST = os.environ.get("DB_HOST")
+DB_PORT = os.environ.get("DB_PORT")
+ALEMBIC_DRIVER = os.environ.get("ALEMBIC_DRIVER")
+DB_NAME = os.environ.get("DB_NAME")
+
+url = f"{ALEMBIC_DRIVER}://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+config.set_main_option('sqlalchemy.url', url)
+
+# section = config.config_ini_section
+# config.set_section_option(section, "DB_USERNAME", os.environ.get("DB_USERNAME"))
+# config.set_section_option(section, "DB_PASSWORD", os.environ.get("DB_PASSWORD"))
+# config.set_section_option(section, "DB_HOST", os.environ.get("DB_HOST"))
+# config.set_section_option(section, "DB_PORT", os.environ.get("DB_PORT"))
+# config.set_section_option(section, "ALEMBIC_DRIVER", os.environ.get("ALEMBIC_DRIVER"))
+# config.set_section_option(section, "DB_NAME", os.environ.get("DB_NAME"))
+#
+# print(config.file_config.__dict__)
+# config.file_config['sqlalchemy.url'] = f"{ALEMBIC_DRIVER}://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -43,7 +69,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = f"{DRIVER}://{USERNAME}:{PASSWD}@{HOST}:{PORT}/{NAME}"
     context.configure(
         url=url,
         target_metadata=target_metadata,
