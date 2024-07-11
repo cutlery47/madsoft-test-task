@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "storage-service"
+name = "storage_service"
 version = "0.1.0"
 description = ""
 authors = ["Arkhip McNutt <ortiz47@mail.ru>"]
@@ -17,6 +17,7 @@ loguru = "^0.7.2"
 asyncpg = "^0.29.0"
 uvicorn = {extras = ["standard"], version = "^0.30.1"}
 psycopg2-binary = "^2.9.9"
+pytest = "^8.2.2"
 
 
 [build-system]
