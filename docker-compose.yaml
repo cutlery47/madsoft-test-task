@@ -1,4 +1,46 @@
 services:
+  storage-service:
+    build: storage_service/
+    image: storage-service-image
+    container_name: storage-service-container
+    environment:
+      MINIO_ENDPOINT: minio:9000
+      MINIO_BUCKET: memes-bucket
+      MINIO_PASSWRD: minio-password
+      MINIO_ACCESS: minio-user
+      DB_DRIVER: postgresql+asyncpg
+      DB_USERNAME: storage-user
+      DB_PASSWORD: 12345
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: storage-service
+      ALEMBIC_DRIVER: postgresql
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - minio
+    networks:
+      - my_network
+
+  postgres:
+    build: postgres/
+    image: postgres-image
+    container_name: postgres-container
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_USER: storage-user
+      POSTGRES_DB: storage-service
+    volumes:
+      - type: bind
+        source: ./postgres/data
+        target: /postgres/data
+    networks:
+      - my_network
+
   minio:
     container_name: memes-minio
     image: "minio/minio:latest"
@@ -15,9 +57,12 @@ services:
       - "9000:9000"
       - "9090:9090"
     volumes:
-    - type: bind
-      source: /home/cutlery/coding/memes-test-task/minio/data
-      target: /minio/data
-    - type: bind
-      source: /home/cutlery/coding/memes-test-task/minio/minio.env
-      target: /minio/minio.env
+      - type: bind
+        source: ./minio/data
+        target: /minio/data
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
