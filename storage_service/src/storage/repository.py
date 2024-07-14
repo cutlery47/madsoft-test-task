@@ -31,6 +31,8 @@ class Repository(AbstractCRUDRepository):
                 query = select(Meme).where(Meme.id == id_)
                 result = await session.execute(query)
                 memes = list(result.scalars().all())
+                if len(memes) == 0 and id_ is not None:
+                    raise DatabaseMemeNotFoundException()
             except SQLAlchemyError as exc:
                 logger.error(f'{type(exc)} raised {exc.args[0]}')
                 raise InternalRepositoryException()
