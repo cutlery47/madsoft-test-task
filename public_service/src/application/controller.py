@@ -1,9 +1,8 @@
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, UploadFile, Request
 from fastapi.responses import JSONResponse
 
 from src.abstract.abstract_controller import AbstractController
 
-import requests
 import httpx
 import os
 
@@ -36,9 +35,9 @@ class Controller(AbstractController):
         @self.router.post("/memes/")
         async def add_meme(file: UploadFile):
             async with httpx.AsyncClient() as client:
-
-                response = await client.post(f"http://{STORAGE_HOST}:{STORAGE_PORT}/private-api/v1/memes/",
-                                             files={'file': file.file})
+                response = await client.request(method='POST',
+                                                url=f"http://{STORAGE_HOST}:{STORAGE_PORT}/private-api/v1/memes/",
+                                                files={'file': (file.filename, file.file)})
 
                 return JSONResponse(status_code=response.status_code,
                                     content=response.json())

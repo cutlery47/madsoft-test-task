@@ -10,10 +10,11 @@ PORT = os.getenv("STORAGE_SERVICE_PORT")
 
 class Application(AbstractApplication):
 
-    def __init__(self,
-                 controller=AbstractController):
+    def __init__(self, controller=AbstractController):
         self.controller = controller
+
         self._app = FastAPI()
+        # При создании объекта приложения сразу же настраиваем рауты
         self._app.include_router(self.controller.get_router())
 
     def asgi_app(self) -> ASGIApp:

@@ -10,6 +10,7 @@ from src.application.service import Service
 from src.storage.repository import Repository
 from src.storage.s3 import MinioS3
 
+# Создаем приложение
 app = ApplicationFactory(
     Application=Application,
     Controller=Controller,
@@ -17,4 +18,3 @@ app = ApplicationFactory(
     Repository=Repository,
     S3=MinioS3
 ).create().asgi_app()
-

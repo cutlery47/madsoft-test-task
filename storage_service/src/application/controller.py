@@ -1,3 +1,5 @@
+import os
+
 from src.abstract.abstract_service import AbstractService
 from src.schemas.meme import InFileMemeDTO
 
@@ -16,6 +18,8 @@ class Controller:
         return self.router
 
     def set_routes(self):
+
+        # настройка раутов
 
         @self.router.get("/memes/")
         async def get_memes():

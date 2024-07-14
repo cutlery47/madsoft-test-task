@@ -1,4 +1,18 @@
 services:
+  public-service:
+    build: public_service/
+    image: public-service-image
+    container_name: public-service-container
+    environment:
+      STORAGE_HOST: storage-service
+      STORAGE_PORT: 8000
+    ports:
+      - "8001:8000"
+    depends_on:
+      - storage-service
+    networks:
+      - my_network
+
   storage-service:
     build: storage_service/
     image: storage-service-image
@@ -15,8 +29,10 @@ services:
       DB_PORT: 5432
       DB_NAME: storage-service
       ALEMBIC_DRIVER: postgresql
+    expose:
+      - "8002"
     ports:
-      - "8000:8000"
+      - "8002:8000"
     depends_on:
       - postgres
       - minio

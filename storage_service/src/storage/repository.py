@@ -25,7 +25,7 @@ class Repository(AbstractCRUDRepository):
         self.engine = create_async_engine(f"{DRIVER}://{USERNAME}:{PASSWD}@{HOST}:{PORT}/{NAME}")
         self.sessionmaker = async_sessionmaker(bind=self.engine, expire_on_commit=False)
 
-    async def read(self, id_: int | None) -> List[Meme]:
+    async def read(self, id_: int = None) -> List[Meme]:
         async with self.sessionmaker() as session:
             try:
                 query = select(Meme).where(Meme.id == id_)

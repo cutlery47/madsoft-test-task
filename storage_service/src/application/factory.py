@@ -16,6 +16,8 @@ class ApplicationFactory(AbstractApplicationFactory):
                  S3: AbstractS3.__class__
                  ):
 
+        # Constructor dependency injection
+
         s3 = S3()
 
         repository = Repository()
