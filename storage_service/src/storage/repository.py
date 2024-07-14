@@ -28,7 +28,10 @@ class Repository(AbstractCRUDRepository):
     async def read(self, id_: int = None) -> List[Meme]:
         async with self.sessionmaker() as session:
             try:
-                query = select(Meme).where(Meme.id == id_)
+                if id_ is not None:
+                    query = select(Meme).where(Meme.id == id_)
+                else:
+                    query = select(Meme)
                 result = await session.execute(query)
                 memes = list(result.scalars().all())
                 if len(memes) == 0 and id_ is not None:
